@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "path": "backend",
+    },
+    {
+      "path": "frontend",
+    },
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "cSpell.words": ["actix", "dotenv", "mockall", "utoipa"],
+    "editor.defaultFormatter": "prettier.prettier-vscode",
+    "[typescript]": {
+      "editor.defaultFormatter": "prettier.prettier-vscode",
+    },
+    "[rust]": {
+      "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+  },
+}

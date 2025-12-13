@@ -1,0 +1,31 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+members = [".", "entity", "macros", "migration"]
+
+[dependencies]
+actix-web = "4.11.0"
+actix-web-validator = "7.0.0"
+async-trait = "0.1.89"
+bcrypt = "0.17.1"
+chrono = "0.4.42"
+dotenv = "0.15.0"
+entity = { path = "entity" }
+log = "0.4.28"
+macros = { path = "macros" }
+migration = { path = "migration" }
+mockall = "0.13.1"
+regex = "1.12.2"
+sea-orm = "1.1.19"
+sea-orm-migration = "1.1.19"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+tracing = "0.1.41"
+tracing-actix-web = "0.7.19"
+tracing-subscriber = "0.3.20"
+utoipa = { version = "5.4.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["actix-web"] }
+validator = { version = "0.20.0", features = ["derive"] }
