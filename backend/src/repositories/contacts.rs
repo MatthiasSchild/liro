@@ -50,7 +50,11 @@ make_repo!(Contact, (
         todo!()
     }
 
-    async fn delete(&self, _id: i32) -> Result<bool, DbErr> {
+    async fn delete_customer(&self, _id: i32) -> Result<bool, DbErr> {
+        todo!()
+    }
+
+    async fn delete_supplier(&self, _id: i32) -> Result<bool, DbErr> {
         todo!()
     }
 ));

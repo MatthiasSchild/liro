@@ -203,7 +203,7 @@ async fn get_supplier(path: web::Path<i32>, state: web::Data<AppState>) -> HttpR
 async fn delete_customer(path: web::Path<i32>, state: web::Data<AppState>) -> HttpResponse {
     let id = path.into_inner();
 
-    let query = state.contacts.delete(id);
+    let query = state.contacts.delete_customer(id);
     let found = match query.await {
         Ok(found) => found,
         Err(_) => return ApiErrors::InternalServerError.into(),
@@ -221,7 +221,7 @@ async fn delete_customer(path: web::Path<i32>, state: web::Data<AppState>) -> Ht
 async fn delete_supplier(path: web::Path<i32>, state: web::Data<AppState>) -> HttpResponse {
     let id = path.into_inner();
 
-    let query = state.contacts.delete(id);
+    let query = state.contacts.delete_supplier(id);
     let found = match query.await {
         Ok(found) => found,
         Err(_) => return ApiErrors::InternalServerError.into(),

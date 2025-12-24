@@ -12,7 +12,7 @@ async fn test_customer_success() {
     let mut state = MockAppState::new();
     state
         .contacts
-        .expect_delete()
+        .expect_delete_customer()
         .once()
         .with(predicate::eq(5))
         .returning(|_| Ok(true));
@@ -37,7 +37,7 @@ async fn test_supplier_success() {
     let mut state = MockAppState::new();
     state
         .contacts
-        .expect_delete()
+        .expect_delete_supplier()
         .once()
         .with(predicate::eq(5))
         .returning(|_| Ok(true));
@@ -62,7 +62,7 @@ async fn test_customer_not_found() {
     let mut state = MockAppState::new();
     state
         .contacts
-        .expect_delete()
+        .expect_delete_customer()
         .once()
         .with(predicate::eq(5))
         .returning(|_| Ok(false));
@@ -87,7 +87,7 @@ async fn test_supplier_not_found() {
     let mut state = MockAppState::new();
     state
         .contacts
-        .expect_delete()
+        .expect_delete_supplier()
         .once()
         .with(predicate::eq(5))
         .returning(|_| Ok(false));
@@ -112,7 +112,7 @@ async fn test_connection_error() {
     let mut state = MockAppState::new();
     state
         .contacts
-        .expect_delete()
+        .expect_delete_customer()
         .once()
         .with(predicate::eq(5))
         .returning(|_| {
