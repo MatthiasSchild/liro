@@ -37,6 +37,18 @@ pub async fn get() -> HttpResponse {
 
 #[utoipa::path()]
 #[delete("/api/products/{id}")]
-pub async fn delete() -> HttpResponse {
-    todo!();
+pub async fn delete(path: web::Path<i32>, state: web::Data<AppState>) -> HttpResponse {
+    let id = path.into_inner();
+
+    let query = state.products.delete(id);
+    let found = match query.await {
+        Ok(found) => found,
+        Err(_) => return ApiErrors::InternalServerError.into(),
+    };
+
+    if !found {
+        return HttpResponse::NotFound().finish();
+    }
+
+    HttpResponse::NoContent().finish()
 }
