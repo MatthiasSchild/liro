@@ -1,9 +1,9 @@
 use actix_web::{HttpResponse, delete, get, post, web};
-use actix_web_validator::Json;
+use actix_web_validator::{Json, Query};
 
 use crate::{
     err::ApiErrors,
-    models::{CreateProductInput, ProductModel},
+    models::{CreateProductInput, ListProductsInput, Page, ProductModel},
     state::AppState,
 };
 
@@ -25,8 +25,23 @@ pub async fn create(payload: Json<CreateProductInput>, state: web::Data<AppState
 
 #[utoipa::path()]
 #[get("/api/products")]
-pub async fn list() -> HttpResponse {
-    todo!();
+pub async fn list(query: Query<ListProductsInput>, state: web::Data<AppState>) -> HttpResponse {
+    let limit = query.limit.unwrap_or(100);
+    let offset = query.offset.unwrap_or(0);
+
+    let query = state.products.list(limit, offset);
+    let result = match query.await {
+        Ok(result) => result,
+        Err(_) => return ApiErrors::InternalServerError.into(),
+    };
+
+    let models = result.data.iter().map(ProductModel::from).collect();
+    HttpResponse::Ok().json(Page {
+        limit,
+        offset,
+        total: result.total,
+        data: models,
+    })
 }
 
 #[utoipa::path()]
