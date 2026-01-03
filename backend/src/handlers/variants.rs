@@ -3,7 +3,7 @@ use actix_web_validator::{Json, Path};
 
 use crate::{
     err::{self, ApiErrors},
-    models::{CreateVariantInput, VariantModel, VariantsPath},
+    models::{CreateVariantInput, ListVariantsInput, Page, VariantModel, VariantsPath},
     state::AppState,
 };
 
@@ -38,9 +38,39 @@ async fn create(payload: Json<CreateVariantInput>, state: web::Data<AppState>) -
 }
 
 #[utoipa::path()]
-#[get("/api/variants")]
-async fn list() -> HttpResponse {
-    todo!();
+#[get("/api/products/{id}/variants")]
+async fn list(
+    path: web::Path<i32>,
+    query: web::Query<ListVariantsInput>,
+    state: web::Data<AppState>,
+) -> HttpResponse {
+    let product_id = path.into_inner();
+    let limit = query.offset.unwrap_or(100);
+    let offset = query.offset.unwrap_or(0);
+
+    let query = state.products.get(product_id);
+    let product_exists = match query.await {
+        Ok(Some(_)) => true,
+        Ok(None) => false,
+        Err(_) => return HttpResponse::InternalServerError().finish(),
+    };
+    if !product_exists {
+        return HttpResponse::NotFound().finish();
+    }
+
+    let query = state.variants.list(product_id, limit, offset);
+    let result = match query.await {
+        Ok(result) => result,
+        Err(_) => return HttpResponse::InternalServerError().finish(),
+    };
+
+    let models = result.data.iter().map(VariantModel::from).collect();
+    HttpResponse::Ok().json(Page {
+        limit,
+        offset,
+        total: result.total,
+        data: models,
+    })
 }
 
 #[utoipa::path()]
