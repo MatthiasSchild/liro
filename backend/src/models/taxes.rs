@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 use validator::Validate;
 
 #[derive(Serialize)]
@@ -24,11 +25,16 @@ impl From<&entity::taxes::Model> for TaxModel {
     }
 }
 
-#[derive(Deserialize, Validate)]
+#[derive(Deserialize, Validate, ToSchema)]
 pub struct CreateTaxInput {
+    #[validate(length(min = 1, max = 32))]
     pub name: String,
+    #[serde(rename = "nameShort")]
+    #[validate(length(min = 1, max = 32))]
     pub name_short: String,
+    #[validate(range(min = 0f64))]
     pub rate: f64,
+    #[serde(rename = "account")]
     pub account_id: i32,
 }
 
