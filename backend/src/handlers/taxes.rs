@@ -39,8 +39,18 @@ async fn list() -> HttpResponse {
 
 #[utoipa::path()]
 #[get("/api/taxes/{id}")]
-async fn get() -> HttpResponse {
-    todo!();
+async fn get(path: web::Path<i32>, state: web::Data<AppState>) -> HttpResponse {
+    let id = path.into_inner();
+
+    let query = state.taxes.get(id);
+    let entity = match query.await {
+        Ok(Some(entity)) => entity,
+        Ok(None) => return HttpResponse::NotFound().finish(),
+        Err(_) => return ApiErrors::InternalServerError.into(),
+    };
+
+    let model = TaxModel::from(&entity);
+    HttpResponse::Ok().json(model)
 }
 
 #[utoipa::path()]
