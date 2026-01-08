@@ -1,9 +1,9 @@
 use actix_web::{HttpResponse, delete, get, post, web};
-use actix_web_validator::Json;
+use actix_web_validator::{Json, Query};
 
 use crate::{
     err::ApiErrors,
-    models::{CreateTaxInput, TaxModel},
+    models::{CreateTaxInput, ListTaxesInput, Page, TaxModel},
     state::AppState,
 };
 
@@ -33,8 +33,23 @@ async fn create(payload: Json<CreateTaxInput>, state: web::Data<AppState>) -> Ht
 
 #[utoipa::path()]
 #[get("/api/taxes")]
-async fn list() -> HttpResponse {
-    todo!();
+async fn list(query: Query<ListTaxesInput>, state: web::Data<AppState>) -> HttpResponse {
+    let limit = query.limit.unwrap_or(100);
+    let offset = query.offset.unwrap_or(0);
+
+    let query = state.taxes.list(limit, offset);
+    let result = match query.await {
+        Ok(result) => result,
+        Err(_) => return ApiErrors::InternalServerError.into(),
+    };
+
+    let models = result.data.iter().map(TaxModel::from).collect();
+    HttpResponse::Ok().json(Page {
+        limit,
+        offset,
+        total: result.total,
+        data: models,
+    })
 }
 
 #[utoipa::path()]
